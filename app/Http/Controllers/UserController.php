@@ -12,7 +12,7 @@ class UserController extends Controller
 {
 
     //
-    public function create(Request $request)
+    public function createUser(Request $request)
     {
         return DB::transaction(function () use ($request) {
 
@@ -52,7 +52,7 @@ class UserController extends Controller
                     $newUser->age = $age;
                     $newUser->save();
 
-                    return response()->json(array('status'=>true, 'user_id'=>$newUser->id));
+                    return response()->json(array('status'=>true, 'success' => 'successfully created', 'user_id'=>$newUser->id));
 
                 }
 
@@ -65,8 +65,7 @@ class UserController extends Controller
         });
         
     }
-
-    public function update(Request $request)
+    public function updateUser(Request $request)
     {
         return DB::transaction(function () use ($request) {
 
@@ -129,7 +128,7 @@ class UserController extends Controller
         });
         
     }
-    public function delete(Request $request)
+    public function deleteUser(Request $request)
     {
         return DB::transaction(function () use ($request) {
 
@@ -157,7 +156,7 @@ class UserController extends Controller
             }
         });
     }
-    public function search(Request $request) {
+    public function searchUser(Request $request) {
         
         return DB::transaction(function () use ($request) {
             $validator = Validator::make($request->all(), [
@@ -198,4 +197,5 @@ class UserController extends Controller
 
 
    }
+   
 }

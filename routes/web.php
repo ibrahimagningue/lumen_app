@@ -14,13 +14,21 @@
 */
 
 
-$router->post('/user/create', 'UserController@create');
-$router->post('/user/update', 'UserController@update');
-$router->post('/user/delete', 'UserController@delete');
-$router->post('/user/search', 'UserController@search');
-$router->get('/test', 'UserController@test');
-
-
 $router->get('/', function () use ($router) {
     return $router->app->version();
+});
+
+$router->group(['prefix' => 'api'], function () use ($router) {
+    $router->get('/', function () {
+        // Uses Auth Middleware
+    });
+
+    $router->get('user/profile', function () {
+        // Uses Auth Middleware
+    });
+    $router->post('/user/create', 'UserController@createUser');
+    $router->post('/user/update', 'UserController@updateUser');
+    $router->post('/user/delete', 'UserController@deleteUser');
+    $router->post('/user/search', 'UserController@searchUser');
+
 });
