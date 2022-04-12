@@ -11,11 +11,12 @@ use Illuminate\Support\Str;
 class UserController extends Controller
 {
 
-    //
+    //Create New User
     public function createUser(Request $request)
     {
         return DB::transaction(function () use ($request) {
 
+            //Data Validation
             $validator = Validator::make($request->all(), [
                 'name' => 'required',
                 'email' => 'required|email|unique:users'
@@ -30,6 +31,7 @@ class UserController extends Controller
                 $phone=$request->phone;
                 $age=$request->age;
 
+                //Check if email already exited
                 $checkEmail = User::where('email', $email)->first();
 
                 if(!empty($checkEmail)) {
@@ -38,7 +40,9 @@ class UserController extends Controller
 
                 }else{
 
+                    //Check if phone variable different of null and empty
                     if($phone!=null || !empty($phone)) {
+                        //Check if phone already exited
                         $checkPhone = User::where('phone', $phone)->first();
                         if(!empty($checkPhone)) {
                             return response()->json(array('status'=>false ,'error' => 'Phone Already existed'));
@@ -85,12 +89,14 @@ class UserController extends Controller
                 $phone=$request->phone;
                 $age=$request->age;
 
+                //Find User by ID
                 $checkUserUpdate = User::find($id);
 
                 if($checkUserUpdate) {
                     
-                    
+                    //Check if this email passed is different with the current email 
                     if($checkUserUpdate->email!=$email) {
+                        //Check if email passed already used by another user
                         $checkEmail = User::where('email', $email)->first();
                         if(!empty($checkEmail)) {
                             return response()->json(array('status'=>false ,'error' => 'Email Already existed by another user'));
@@ -99,6 +105,7 @@ class UserController extends Controller
 
                     if($phone!=null || !empty($phone)) {
                         if($checkUserUpdate->phone!=$phone) {
+                            //Check if phone passed already used by another user
                             $checkPhone = User::where('phone', $phone)->first();
                             if(!empty($checkPhone)) {
                                 return response()->json(array('status'=>false ,'error' => 'Phone Already existed by another user'));
@@ -141,9 +148,11 @@ class UserController extends Controller
 
             try{
                 $id=$request->id;
+                //Find user by ID
                 $deleteUser =  User::find($id);
 
                 if($deleteUser){
+                    //Delete if existed 
                     $deleteUser->delete();
                     return response()->json(array('success' => 'User successfully deleted'));
                 }else{
@@ -159,14 +168,16 @@ class UserController extends Controller
     public function searchUser(Request $request) {
         
         return DB::transaction(function () use ($request) {
+
+            //Data Validation
             $validator = Validator::make($request->all(), [
-                'name' => 'required',
+                'phone' => 'required',
                 'email' => 'required|email'
             ]);
-
             if($validator->fails()) {
                 return response()->json(array('status'=>false ,'error' => $validator->messages()->first()));
             }
+
             try{
                 $email = $request->email;
                 $phone =  $request->phone;
@@ -196,6 +207,48 @@ class UserController extends Controller
 
 
 
-   }
-   
+    }
+    public function searchUser0(Request $request) {
+        
+        return DB::transaction(function () use ($request) {
+
+            //Data Validation
+            $validator = Validator::make($request->all(), [
+                'phone' => 'required',
+                'email' => 'required|email'
+            ]);
+            if($validator->fails()) {
+                return response()->json(array('status'=>false ,'error' => $validator->messages()->first()));
+            }
+
+            try{
+                $email = $request->email;
+                $phone =  $request->phone;
+
+        
+                $users =  User::where(
+                    function($query) use($email, $phone) {
+                        $query->where('email', 'LIKE', "%$email%")
+                        ->orwhere('email', 'LIKE', "%$email")
+                        ->orwhere('email', 'LIKE', "$email%")
+                        ->orwhere('phone', 'LIKE', "%$phone%")
+                        ->orwhere('phone', 'LIKE', "%$phone")
+                        ->orwhere('phone', 'LIKE', "$phone%");
+                    }
+                )
+                ->orderBy('users.email','asc')
+                ->orderBy('users.phone','asc')
+                ->get();
+
+                return  response()->json($users);
+
+            } catch (\Exception $e)
+            {
+                return response()->json(array('status'=>false ,'error' => 'Something wrong please try late'));
+            }
+        });
+
+
+
+    }
 }

@@ -19,13 +19,7 @@ $router->get('/', function () use ($router) {
 });
 
 $router->group(['prefix' => 'api'], function () use ($router) {
-    $router->get('/', function () {
-        // Uses Auth Middleware
-    });
 
-    $router->get('user/profile', function () {
-        // Uses Auth Middleware
-    });
     $router->post('/user/create', 'UserController@createUser');
     $router->post('/user/update', 'UserController@updateUser');
     $router->post('/user/delete', 'UserController@deleteUser');
