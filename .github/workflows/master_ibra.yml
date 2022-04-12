@@ -56,5 +56,5 @@ jobs:
         with:
           app-name: 'ibra'
           slot-name: 'Production'
-          publish-profile: ${{ secrets.AZUREAPPSERVICE_PUBLISHPROFILE_F2077E6BCD5A4A0BAE6845E8307C4D8A }}
+          publish-profile: ${{ secrets.AZUREAPPSERVICE_PUBLISHPROFILE_604BC0E0908A4C338EE050D661ED11C3 }}
           package: .
