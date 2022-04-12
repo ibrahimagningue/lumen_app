@@ -3,7 +3,6 @@
 namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
-use App\Models\Digit;
 use App\Models\User;
 use Illuminate\Support\Facades\Validator;
 use DB;
@@ -11,6 +10,7 @@ use Illuminate\Support\Str;
 
 class UserController extends Controller
 {
+
     //
     public function create(Request $request)
     {

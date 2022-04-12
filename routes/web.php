@@ -13,11 +13,13 @@
 |
 */
 
-$router->post('/digit/insert', 'DigitController@store');
+
 $router->post('/user/create', 'UserController@create');
 $router->post('/user/update', 'UserController@update');
 $router->post('/user/delete', 'UserController@delete');
 $router->post('/user/search', 'UserController@search');
+$router->get('/test', 'UserController@test');
+
 
 $router->get('/', function () use ($router) {
     return $router->app->version();
