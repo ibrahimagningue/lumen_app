@@ -181,15 +181,12 @@ class UserController extends Controller
             $field=null;
 
 
-            if(is_numeric($request->get('field'))){
-                $field = $request->get('field');
+            if (filter_var($request->get('field'), FILTER_VALIDATE_EMAIL)) {
+                $is_email=true;
+            }else{
                 $is_phone=true;
             }
-            elseif (filter_var($request->get('field'), FILTER_VALIDATE_EMAIL)) {
-                $field = $request->get('field');
-                $is_email=true;
-            }
-
+            $field = $request->get('field');
             
             try{
 
