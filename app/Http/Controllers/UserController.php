@@ -168,34 +168,51 @@ class UserController extends Controller
     public function searchUser(Request $request) {
         
         return DB::transaction(function () use ($request) {
-
             //Data Validation
             $validator = Validator::make($request->all(), [
-                'phone' => 'required',
-                'email' => 'required|email'
+                'field' => 'required',
             ]);
             if($validator->fails()) {
                 return response()->json(array('status'=>false ,'error' => $validator->messages()->first()));
             }
 
-            try{
-                $email = $request->email;
-                $phone =  $request->phone;
+            $is_email=false;
+            $is_phone=false;
+            $field=null;
 
-        
-                $users =  User::where(
-                    function($query) use($email, $phone) {
-                        $query->where('email', 'LIKE', "%$email%")
-                        ->orwhere('email', 'LIKE', "%$email")
-                        ->orwhere('email', 'LIKE', "$email%")
-                        ->orwhere('phone', 'LIKE', "%$phone%")
-                        ->orwhere('phone', 'LIKE', "%$phone")
-                        ->orwhere('phone', 'LIKE', "$phone%");
-                    }
-                )
-                ->orderBy('users.email','asc')
-                ->orderBy('users.phone','asc')
-                ->get();
+
+            if(is_numeric($request->get('field'))){
+                $field = $request->get('field');
+                $is_phone=true;
+            }
+            elseif (filter_var($request->get('field'), FILTER_VALIDATE_EMAIL)) {
+                $field = $request->get('field');
+                $is_email=true;
+            }
+
+            
+            try{
+
+                $data =  User::select('users.*');
+                if($is_email){
+                    $users = $data->where(
+                        function($query) use($field) {
+                            $query->where('email', 'LIKE', "%$field%");
+                            $query->orwhere('email', 'LIKE', "%$field");
+                            $query->orwhere('email', 'LIKE', "$field%");
+                        }
+                    )->orderBy('users.email','asc');
+                }
+                if($is_phone){
+                    $users = $data->where(
+                        function($query) use($field) {
+                            $query->where('phone', 'LIKE', "%$field%");
+                            $query->orwhere('phone', 'LIKE', "%$field");
+                            $query->orwhere('phone', 'LIKE', "$field%");
+                        }
+                    )->orderBy('users.phone','asc');
+                }
+                $users = $data->get();
 
                 return  response()->json($users);
 
@@ -208,47 +225,5 @@ class UserController extends Controller
 
 
     }
-    public function searchUser0(Request $request) {
-        
-        return DB::transaction(function () use ($request) {
-
-            //Data Validation
-            $validator = Validator::make($request->all(), [
-                'phone' => 'required',
-                'email' => 'required|email'
-            ]);
-            if($validator->fails()) {
-                return response()->json(array('status'=>false ,'error' => $validator->messages()->first()));
-            }
-
-            try{
-                $email = $request->email;
-                $phone =  $request->phone;
-
-        
-                $users =  User::where(
-                    function($query) use($email, $phone) {
-                        $query->where('email', 'LIKE', "%$email%")
-                        ->orwhere('email', 'LIKE', "%$email")
-                        ->orwhere('email', 'LIKE', "$email%")
-                        ->orwhere('phone', 'LIKE', "%$phone%")
-                        ->orwhere('phone', 'LIKE', "%$phone")
-                        ->orwhere('phone', 'LIKE', "$phone%");
-                    }
-                )
-                ->orderBy('users.email','asc')
-                ->orderBy('users.phone','asc')
-                ->get();
-
-                return  response()->json($users);
-
-            } catch (\Exception $e)
-            {
-                return response()->json(array('status'=>false ,'error' => 'Something wrong please try late'));
-            }
-        });
-
-
-
-    }
+ 
 }
